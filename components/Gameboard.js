@@ -5,10 +5,13 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import styles from '../style/styles';
 
 let board = [];
+let diceNumbers = [];
 let numberField = [];
 const NBR_OF_DICES = 5;
 const NBR_OF_VALUES = 6;
 const NBR_OF_THROWS = 3;
+let resultCounter = [0, 0, 0, 0, 0, 0];
+
 
 export default function Gameboard(){
 
@@ -20,13 +23,7 @@ export default function Gameboard(){
     const[bonusCounter, setBonusCounter] = useState('63');
     const[sum, setSum] = useState(0);
 
-    let resultCounter = [];
-    resultCounter.push("0");
-    resultCounter.push("0");
-    resultCounter.push("0");
-    resultCounter.push("0");
-    resultCounter.push("0");
-    resultCounter.push("0");
+    //let resultCounter = [0, 0, 0, 0, 0, 0];
 
     numberField.push("numeric-1-circle");
     numberField.push("numeric-2-circle");
@@ -58,7 +55,7 @@ export default function Gameboard(){
                 <Grid>
                     <Col>
                         <Row>
-                            <Text textAlign="center">{resultCounter[i] = sum}</Text>
+                            <Text textAlign="center">{resultCounter[i]}</Text>
                         </Row>
                         <Row>
                             <Pressable
@@ -115,9 +112,31 @@ export default function Gameboard(){
     }
 
     function selectNumber(i){
+
         let number = [...selectedNumber];
-        number[i] = selectedNumber[i] ? false : true;
+        // number[i] = selectedNumber[i] ? false : true;
+        number[i] = selectedNumber[i] = true;
         setSelectedNumber(number);
+
+        // if(selectedNumber === 0){
+        //     resultCounter[0] //diceNumbers Array durchsuchen nach einsen und diese addieren, anschließend resultCounter[0] hinzufügen
+        // }
+        /*
+        const counter = {};
+        diceNumbers.forEach((x) => {
+            counter[x] = (counter[x] || 0) + 1;
+        })
+        console.log(counter);
+        */
+
+       let tempSum = 0;
+       for (let x = 0; x <= diceNumbers.length; x++) {
+            if (diceNumbers[x] === (i + 1)) {
+                tempSum += diceNumbers[x];
+            }
+       }
+       console.log(tempSum, i);
+       resultCounter[i] = tempSum;
     }
 
     function throwDices(){
@@ -125,16 +144,32 @@ export default function Gameboard(){
             if(!selectedDices[i]){
                 let randomNumber = Math.floor(Math.random()*6+1);
                 board[i] = 'dice-'+randomNumber;
+                diceNumbers[i] = randomNumber;
             }
         }
         setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
+        //calculate();
     }
 
-    function sumSelected(){
-        sum = selectedDices.reduce((partialSum, a) => partialSum + a, 0) + !selectedDices.reduce((partialSum, b) => partialSum + b, 0);
-        console.log(sum);
-        return sum;
-    }
+    // function calculate(){
+    //     for(let i = 0; i<NBR_OF_DICES; i++){
+    //         if(diceNumbers[i] === 1){
+    //             resultCounter[i] += 1;
+    //         } else if(diceNumbers[i] === 2){
+    //             resultCounter[i] = resultCounter[i] +2;
+    //         } else if(diceNumbers[i] === 3){
+    //             resultCounter[i] = resultCounter[i] +3;
+    //         } else if(diceNumbers[i] === 4){
+    //             resultCounter[i] = resultCounter[i] +4;
+    //         } else if(diceNumbers[i] === 5){
+    //             resultCounter[i] = resultCounter[i] +5;
+    //         } else{
+    //             resultCounter[i] = resultCounter[i] +6;
+    //         }
+    //     }
+    //     console.log(resultCounter);
+    //     return resultCounter;
+    // }
 
     function checkWinner(){
         if(board.every((val, i, arr) => val === arr[0]) && nbrOfThrowsLeft > 0){
