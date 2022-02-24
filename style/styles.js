@@ -72,5 +72,10 @@ export default StyleSheet.create({
       buttonText: {
         color:"#2B2B52",
         fontSize: 20
+      },
+
+      numberField: {
+        textAlign: "center",
+        margin: "auto"
       }
 });
