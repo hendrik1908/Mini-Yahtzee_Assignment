@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Text, View, Pressable} from 'react-native';
+import {Text, View, Pressable, ScrollView} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import styles from '../style/styles';
 
 let board = [];
 let diceNumbers = [];
-let numberField = [];
+//let numberField = [];
+//const numberField = [];
 const NBR_OF_DICES = 5;
 const NBR_OF_VALUES = 6;
 const NBR_OF_THROWS = 3;
@@ -22,7 +23,8 @@ export default function Gameboard(){
     const[selectedNumber, setSelectedNumber] = useState(new Array(NBR_OF_VALUES).fill(false));
     const[points, setPoints] = useState('0');
     const[bonusCounter, setBonusCounter] = useState('63');
-    const[disable, setDisable] = useState(false);
+    const numberField = [];
+    const[bonusStatus, setBonusStatus] = useState('');
 
     //let resultCounter = [0, 0, 0, 0, 0, 0];
 
@@ -77,16 +79,17 @@ export default function Gameboard(){
     }
 
     const resetRound = (() => {
+        setSelectedDices(Array(NBR_OF_DICES).fill(false));
+        throwDices();
         setStatus("Throw dices");
         setNbrOfThrowsLeft(3);
-        setSelectedDices(new Array(NBR_OF_DICES).fill(false));
     });
 
     const resetGame = (() => {
+        setSelectedDices(Array(NBR_OF_DICES).fill(false));
         setStatus("Throw dices");
         setNbrOfThrowsLeft(3);
-        setSelectedDices(new Array(NBR_OF_DICES).fill(false));
-        setSelectedNumber(new Array(NBR_OF_VALUES).fill(false));
+        setSelectedNumber(Array(NBR_OF_VALUES).fill(false));
         tempCounter = 0;
         setPoints(0);
         setBonusCounter(63);
@@ -95,18 +98,19 @@ export default function Gameboard(){
 
     useEffect(() => {
         checkBonusPoint();
+        if(points < 63){
+            setBonusStatus('You are ' + bonusCounter + ' points away from bonus.');
+        } else{
+            setBonusStatus('You won the bonus of 35 Points.');
+        }
+        
         if(nbrOfThrowsLeft < 0){
             setNbrOfThrowsLeft(NBR_OF_THROWS-1);
         }
     }, [nbrOfThrowsLeft]);
     
     function getDiceColor(i){
-        if(board.every((val, i, arr) => val === arr[0])){
-            return "orange";
-        }
-        else{
-            return selectedDices[i] ? "black" : "steelblue";
-        }
+        return selectedDices[i] ? "black" : "steelblue";
     }
 
     function getNumberColor(i){
@@ -115,8 +119,13 @@ export default function Gameboard(){
 
     function selectDice(i){
         let dices = [...selectedDices];
-        dices[i] = selectedDices[i] ? false : true;
-        setSelectedDices(dices);
+        if(nbrOfThrowsLeft === 3 || nbrOfThrowsLeft === 0){
+            dices[i] = selectedDices[i] = false;
+        } else{
+            dices[i] = selectedDices[i] ? false : true;
+            setSelectedDices(dices);
+        }
+        
     }
 
     const selectNumber = (i) => {
@@ -137,26 +146,24 @@ export default function Gameboard(){
             resultCounter[i] = tempSum;
             tempCounter = tempCounter + tempSum;
             setPoints(tempCounter);
-            setBonusCounter(63 - tempCounter);
+            if(tempCounter < 63){
+                setBonusCounter(63 - tempCounter);
+                //setBonusStatus('You are ' + bonusCounter + ' points away from bonus.');
+            } else{
+                setBonusCounter(0);
+                //setBonusStatus('You won the bonus of 35 Points.');
+            }
             resetRound();
-            throwDices();
-            setNbrOfThrowsLeft(3);
         } else{
             setStatus('You already set points for this spot.');
         }
-        
-
-        
-        // tempCounter = tempCounter + tempSum;
-        // setPoints(tempCounter);
-        
-
     }
 
     function throwDices(){
         if(nbrOfThrowsLeft === 0){
-            setStatus('Select your points before next throw');
-        } else if (status === 'Game over. All points selected.'){
+            setStatus('Select your points before next throw.');
+        } else if (selectedNumber.every(val => val === true)){
+            setSelectedDices(Array(NBR_OF_DICES).fill(false));
             resetGame();
         } else{
             for(let i = 0; i < NBR_OF_DICES; i++){
@@ -171,52 +178,19 @@ export default function Gameboard(){
         }
     }
 
-    // function calculate(){
-    //     for(let i = 0; i<NBR_OF_DICES; i++){
-    //         if(diceNumbers[i] === 1){
-    //             resultCounter[i] += 1;
-    //         } else if(diceNumbers[i] === 2){
-    //             resultCounter[i] = resultCounter[i] +2;
-    //         } else if(diceNumbers[i] === 3){
-    //             resultCounter[i] = resultCounter[i] +3;
-    //         } else if(diceNumbers[i] === 4){
-    //             resultCounter[i] = resultCounter[i] +4;
-    //         } else if(diceNumbers[i] === 5){
-    //             resultCounter[i] = resultCounter[i] +5;
-    //         } else{
-    //             resultCounter[i] = resultCounter[i] +6;
-    //         }
-    //     }
-    //     console.log(resultCounter);
-    //     return resultCounter;
-    // }
-
-    // function checkWinner(){
-    //     if(board.every((val, i, arr) => val === arr[0]) && nbrOfThrowsLeft > 0){
-    //         setStatus('You won');
-    //     }
-    //     else if(board.every((val, i, arr) => val === arr[0]) && nbrOfThrowsLeft === 0){
-    //         setStatus('You won, game over');
-    //         setSelectedDices(new Array(NBR_OF_DICES).fill(false));
-    //     }
-    //     else if(nbrOfThrowsLeft === 0){
-    //         setStatus('Game over');
-    //         setSelectedDices(new Array(NBR_OF_DICES).fill(false));
-    //     }
-    //     else{
-    //         setStatus('Keep on throwing');
-    //     }
-    // }
-
     function checkBonusPoint(){
         if(nbrOfThrowsLeft === 0){
             setStatus('Select your points.');
-
-        }
-        else if(selectedNumber.every(val => val === true)){
+        } else if(selectedNumber.every(val => val === true)){
+            if(points >= 63){
+                setBonusStatus('You won the bonus of 35 Points.');
+                setPoints(points + 35);
+            }
             setStatus('Game over. All points selected.');
+        } else if(nbrOfThrowsLeft === 3){
+            setStatus('Throw dices.');
         } else{
-            setStatus('Keep on throwing.');
+            setStatus('Select and throw dices again.');
         }
     }
 
@@ -231,7 +205,8 @@ export default function Gameboard(){
                 </Text>
             </Pressable>
             <Text style={styles.gameinfo}>Total: {points}</Text>
-            <Text style={styles.gameinfo}>You are {bonusCounter} points away from bonus.</Text>
+            {/* <Text style={styles.gameinfo}>You are {bonusCounter} points away from bonus.</Text> */}
+            <Text style={styles.gameinfo}>{bonusStatus}</Text>
             <View style={styles.flex}>{numbers}</View>
         </View>
     )
