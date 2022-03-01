@@ -18,12 +18,13 @@ export default StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         margin: 10,
+        marginBottom: 30,
         width: '100%',
         textAlign: 'center',
       },
 
       footer: {
-        marginTop: 40,
+        marginTop: 30,
         backgroundColor: '#1e90ff',
         flexDirection: 'row',
       },
@@ -49,13 +50,23 @@ export default StyleSheet.create({
         fontSize: 18,
       },
 
+      points: {
+        backgroundColor: '#fff',
+        textAlign: 'center',
+        justifyContent: 'center',
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginBottom: 10,
+      },
+
       item: {
         margin: 15,
         padding: 5
       },
 
       flex: {
-        flexDirection: "row"
+        flexDirection: "row",
+        marginBottom: 20,
       },
 
       button: {
@@ -76,6 +87,11 @@ export default StyleSheet.create({
 
       numberField: {
         textAlign: "center",
-        margin: "auto"
+        margin: "auto",
+        fontSize: 20
+      },
+
+      numberArea: {
+        marginTop: 30
       }
 });

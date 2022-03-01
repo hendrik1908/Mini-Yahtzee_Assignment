@@ -1,13 +1,10 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Text, View, Pressable, ScrollView} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Col, Row, Grid } from "react-native-easy-grid";
 import styles from '../style/styles';
 
 let board = [];
 let diceNumbers = [];
-//let numberField = [];
-//const numberField = [];
 const NBR_OF_DICES = 5;
 const NBR_OF_VALUES = 6;
 const NBR_OF_THROWS = 3;
@@ -25,8 +22,6 @@ export default function Gameboard(){
     const[bonusCounter, setBonusCounter] = useState('63');
     const numberField = [];
     const[bonusStatus, setBonusStatus] = useState('');
-
-    //let resultCounter = [0, 0, 0, 0, 0, 0];
 
     numberField.push("numeric-1-circle");
     numberField.push("numeric-2-circle");
@@ -54,26 +49,18 @@ export default function Gameboard(){
     const numbers = [];
     for (let i = 0; i < NBR_OF_VALUES; i++) {
         numbers.push(
-            <View>
-                <Grid>
-                    <Col>
-                        <Row>
-                            <Text style={styles.numberField}>{resultCounter[i]}</Text>
-                        </Row>
-                        <Row>
-                            <Pressable
-                                key={"numbers" + i}
-                                onPress={() => selectNumber(i)}>
-                                <MaterialCommunityIcons
-                                    name={numberField[i]}
-                                    key={"numbers" + i}
-                                    size={30}
-                                    color={getNumberColor(i)}>
-                                </MaterialCommunityIcons>
-                            </Pressable>
-                        </Row>
-                    </Col>
-                </Grid>
+            <View style={styles.numberArea}>
+                <Text style={styles.numberField}>{resultCounter[i]}</Text>
+                <Pressable
+                    key={"numbers" + i}
+                    onPress={() => selectNumber(i)}>
+                    <MaterialCommunityIcons
+                        name={numberField[i]}
+                        key={"numbers" + i}
+                        size={50}
+                        color={getNumberColor(i)}>
+                    </MaterialCommunityIcons>
+                </Pressable>
             </View>
         )
     }
@@ -93,6 +80,7 @@ export default function Gameboard(){
         tempCounter = 0;
         setPoints(0);
         setBonusCounter(63);
+        setBonusStatus('You are ' + bonusCounter + ' points away from bonus.');
         resultCounter = [0,0,0,0,0,0];
     });
 
@@ -101,7 +89,7 @@ export default function Gameboard(){
         if(points < 63){
             setBonusStatus('You are ' + bonusCounter + ' points away from bonus.');
         } else{
-            setBonusStatus('You won the bonus of 35 Points.');
+            setBonusStatus('You won the bonus of 35 Points!');
         }
         
         if(nbrOfThrowsLeft < 0){
@@ -131,7 +119,6 @@ export default function Gameboard(){
     const selectNumber = (i) => {
         let number = [...selectedNumber];
         number[i] = selectedNumber[i] ? false : true;
-        //number[i] = selectedNumber[i] = true;
         if(nbrOfThrowsLeft === 3){
             setStatus('You have to throw dices first.');
         } else if (!selectedNumber[i]){
@@ -142,20 +129,17 @@ export default function Gameboard(){
                     tempSum += diceNumbers[x];
                 }
             }
-            //console.log(tempSum, i);
             resultCounter[i] = tempSum;
             tempCounter = tempCounter + tempSum;
             setPoints(tempCounter);
             if(tempCounter < 63){
                 setBonusCounter(63 - tempCounter);
-                //setBonusStatus('You are ' + bonusCounter + ' points away from bonus.');
             } else{
                 setBonusCounter(0);
-                //setBonusStatus('You won the bonus of 35 Points.');
             }
             resetRound();
         } else{
-            setStatus('You already set points for this spot.');
+            setStatus('You already set points for ' + (i + 1) + '.');
         }
     }
 
@@ -174,7 +158,6 @@ export default function Gameboard(){
                 }
             }
             setNbrOfThrowsLeft(nbrOfThrowsLeft-1);
-            //calculate();
         }
     }
 
@@ -204,8 +187,7 @@ export default function Gameboard(){
                     Throw dices
                 </Text>
             </Pressable>
-            <Text style={styles.gameinfo}>Total: {points}</Text>
-            {/* <Text style={styles.gameinfo}>You are {bonusCounter} points away from bonus.</Text> */}
+            <Text style={styles.points}>Total: {points}</Text>
             <Text style={styles.gameinfo}>{bonusStatus}</Text>
             <View style={styles.flex}>{numbers}</View>
         </View>

@@ -8,12 +8,12 @@ import Header from './components/Header';
 export default function App() {
   return (
     <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
         <Header />
-        <ScrollView style={styles.scrollView}>
-          <Gameboard />
-        </ScrollView>
+        <Gameboard />
         <Footer  />
         <StatusBar style="auto" />
+      </ScrollView>
     </View>
   );
 }
