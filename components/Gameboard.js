@@ -49,7 +49,7 @@ export default function Gameboard(){
     const numbers = [];
     for (let i = 0; i < NBR_OF_VALUES; i++) {
         numbers.push(
-            <View style={styles.numberArea}>
+            <View style={styles.numberArea} key={"numberarea" + i}>
                 <Text style={styles.numberField}>{resultCounter[i]}</Text>
                 <Pressable
                     key={"numbers" + i}
@@ -119,9 +119,9 @@ export default function Gameboard(){
     const selectNumber = (i) => {
         let number = [...selectedNumber];
         number[i] = selectedNumber[i] ? false : true;
-        if(nbrOfThrowsLeft === 3){
+        if (nbrOfThrowsLeft === 3) {
             setStatus('You have to throw dices first.');
-        } else if (!selectedNumber[i]){
+        } else if (!selectedNumber[i]) {
             setSelectedNumber(number);
             let tempSum = 0;
             for (let x = 0; x <= diceNumbers.length; x++) {
@@ -132,13 +132,13 @@ export default function Gameboard(){
             resultCounter[i] = tempSum;
             tempCounter = tempCounter + tempSum;
             setPoints(tempCounter);
-            if(tempCounter < 63){
+            if (tempCounter < 63) {
                 setBonusCounter(63 - tempCounter);
-            } else{
+            } else {
                 setBonusCounter(0);
             }
             resetRound();
-        } else{
+        } else {
             setStatus('You already set points for ' + (i + 1) + '.');
         }
     }
